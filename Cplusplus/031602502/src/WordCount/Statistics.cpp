@@ -55,23 +55,28 @@ void Statistics::calc()//统计功能，可不必手动调用
 			if (isLetter(c))
 			{
 				string word;
-				word.insert(word.end(), c);
+				//word.insert(word.end(), c);//slower
+				word += c;//faster
 				j++;
 				if (j <= thisline.size() - 3)
 				{
 					while (j <= thisline.size() - 1 && (isLetter(thisline[j]) || isNumber(thisline[j])))
 					{
-						word.insert(word.end(), thisline[j]);
+						//word.insert(word.end(), thisline[j]);//slower
+						word += thisline[j];//faster
 						j++;
 					}
 				}
 				if (word.size() >= 4 && isLetter(word[0]) && isLetter(word[1]) && isLetter(word[2]) && isLetter(word[3]))
 				{
 					m_word_num++;
+					/* // slower
 					if (m_wd_mp.find(word) == m_wd_mp.end())
 						m_wd_mp[word] = 1;
 					else
 						m_wd_mp[word]++;
+					*/
+					m_wd_mp[word]++;//faster
 				}
 			}
 			else if (isNumber(c))

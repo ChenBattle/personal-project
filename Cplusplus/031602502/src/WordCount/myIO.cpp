@@ -20,6 +20,7 @@ string myIO::GetFileNameFromArgs(int argc, char *argv[]) // 用于从命令行�
 
 bool myIO::ReadFileLines(string file_name, vector<string> &file_lines) //给定文件名，以vector<string>形式返回文件内容，每个元素代表一行
 {
+	/* // c++ code  slower
 	ifstream ifs(file_name);
 	if (!ifs)
 	{
@@ -59,6 +60,50 @@ bool myIO::ReadFileLines(string file_name, vector<string> &file_lines) //给定�
 		//cout << "std char num:" << _cnum << endl;
 		ifs.close();
 		return true;
+	}*/
+	
+	// c code  faster
+	FILE *fp = NULL;
+	fopen_s(&fp, file_name.c_str(), "r");
+
+	if (fp==NULL)
+	{
+		throw "读取文件时打开文件异常";
+		return false;
+	}
+	else
+	{
+		string line_buf, str_low;
+		char c;
+		int _cnum = 0;
+		while (true)//读取文件，按字符读入，拼装成行，存于file_lines中
+		{
+			c = fgetc(fp);
+			if (c == EOF)
+			{
+				if (line_buf.size() > 0)
+				{
+					str_low.resize(line_buf.size());
+					transform(line_buf.begin(), line_buf.end(), str_low.begin(), tolower);
+					file_lines.push_back(str_low);
+					//cout << str_low;
+				}
+				break;
+			}
+			line_buf += c;
+			_cnum++;
+			if (c == '\n')
+			{
+				str_low.resize(line_buf.size());
+				transform(line_buf.begin(), line_buf.end(), str_low.begin(), tolower);
+				file_lines.push_back(str_low);
+				//cout << str_low;
+				line_buf = "";
+			}
+		}
+		//cout << "std char num:" << _cnum << endl;
+		fclose(fp);
+		return true;
 	}
 }
 
@@ -77,6 +122,8 @@ bool myIO::Output(int char_num, int word_num, int line_num, vector<map<string, i
 	}
 	if (toFile)// output to file
 	{
+		/*
+		// c++ code   slower
 		ofstream ofs(file_name);
 		if (!ofs)
 		{
@@ -93,6 +140,26 @@ bool myIO::Output(int char_num, int word_num, int line_num, vector<map<string, i
 				ofs << "<" << top10wd[i]->first << ">: " << top10wd[i]->second << endl;
 			}
 			ofs.close();
+		}
+		*/
+		// c code  faster
+		FILE *fp;
+		fopen_s(&fp, file_name.c_str(), "w");
+		if (fp == NULL)
+		{
+			throw "输出文件时打开文件异常";
+			return false;
+		}
+		else
+		{
+			fprintf(fp, "characters: %d\n", char_num);
+			fprintf(fp, "words: %d\n", word_num);
+			fprintf(fp, "lines: %d\n", line_num);
+			for (unsigned int i = 0; i < top10wd.size(); i++)
+			{
+				fprintf(fp, "<%s>: %d\n", top10wd[i]->first.c_str(), top10wd[i]->second);
+			}
+			fclose(fp);
 		}
 	}
 	return true;

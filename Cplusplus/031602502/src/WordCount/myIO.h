@@ -1,4 +1,4 @@
-﻿#pragma once
+﻿//#pragma once
 #include "pch.h"
 #include <iostream>
 using namespace std;
@@ -7,7 +7,8 @@ using namespace std;
 #include <map>
 #include <fstream>
 #include <algorithm>
-
+#include <stdio.h>
+#include <stdlib.h>
 
 namespace myIO
 {
